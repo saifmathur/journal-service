@@ -9,11 +9,11 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        // Allow CORS for specific URL patterns
-        registry.addMapping("/**")
-                .allowedOrigins("http://localhost:4200") // Allow frontend URL
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Allowed HTTP methods
-                .allowedHeaders("*") // Allow all headers
-                .allowCredentials(true); // Allow credentials (cookies, etc.)
+        registry.addMapping("/**")  // Allow CORS for all paths
+                .allowedOrigins("http://localhost:4200")  // Allow your Angular app origin
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")  // Allowed HTTP methods
+                .allowedHeaders("*")  // Allow all headers
+                .allowCredentials(true);  // Allow sending credentials (cookies, authorization headers)
     }
 }
+
