@@ -5,10 +5,12 @@ import com.journal.journal_service.models.WorkType;
 import com.journal.journal_service.repository.WorkTypeRepo;
 import com.journal.journal_service.services.WorkTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class WorkTypeServiceImpl implements WorkTypeService {
 
     @Autowired
