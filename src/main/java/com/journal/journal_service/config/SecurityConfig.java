@@ -22,13 +22,19 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.cors()  // Enable CORS in Spring Security
+        http
+                .cors() // Enable CORS
                 .and()
-                .authorizeRequests()
-                .dispatcherTypeMatchers(HttpMethod.valueOf("/work/**")).authenticated()  // Protect your endpoints
-                .anyRequest().permitAll()  // Allow other endpoints
-                .and()
-                .httpBasic();  // Enable Basic Authentication
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/work/**", "/journal/**") // Disable CSRF for specific endpoints
+                )
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/work/**").authenticated() // Protect /work/** endpoints
+                        .requestMatchers("/journal/**").authenticated() // Protect /journal/** endpoints
+                        .anyRequest().permitAll() // Allow all other endpoints
+                )
+                .httpBasic(); // Enable basic authentication
+
         return http.build();
     }
 }

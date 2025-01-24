@@ -28,10 +28,9 @@ public class WorkTypeServiceImpl implements WorkTypeService {
     @Override
     public WorkType createWorkType(WorkTypeDto workTypeDto) throws Exception {
         try{
-            System.out.println(workTypeDto);
             WorkType wt = new WorkType();
-            //wt.setWorkType(workTypeDto.getWorkType());
-            //wt.setUserId(workTypeDto.getUserId());
+            wt.setWorkType(workTypeDto.getWorkType());
+            wt.setUserId(workTypeDto.getUserId());
             wt = workTypeRepo.saveAndFlush(wt);
             return wt;
 
