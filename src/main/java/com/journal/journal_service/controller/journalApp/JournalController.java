@@ -1,9 +1,8 @@
-package com.journal.journal_service.controller;
+package com.journal.journal_service.controller.journalApp;
 
 import com.journal.journal_service.dto.TaskFormDto;
 import com.journal.journal_service.models.JournalEntry;
 import com.journal.journal_service.services.JournalService;
-import com.journal.journal_service.services.implementation.JournalServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
