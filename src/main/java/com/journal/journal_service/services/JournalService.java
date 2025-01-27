@@ -10,4 +10,6 @@ public interface JournalService {
     String createJournalEntry(TaskFormDto taskFormDto) throws Exception;
 
     List<JournalEntry> getAllEntriesByUserId() throws Exception;
+
+    List<JournalEntry> deleteEntry(Long id) throws Exception;
 }

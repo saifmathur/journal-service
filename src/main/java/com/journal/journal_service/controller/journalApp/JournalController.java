@@ -42,4 +42,14 @@ public class JournalController {
             throw new RuntimeException(e);
         }
     }
+
+    @GetMapping("/deleteEntry/{id}")
+    public List<JournalEntry> deleteEntry(@PathVariable Long id) throws Exception {
+        try {
+            return journalService.deleteEntry(id);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }
