@@ -53,4 +53,17 @@ public class JournalServiceImpl implements JournalService {
             throw new Exception(e);
         }
     }
+
+    @Override
+    public List<JournalEntry> deleteEntry(Long id) throws Exception{
+        try{
+            Long userId = jwtUtil.getUserId();
+            JournalEntry je = journalRepo.findByUserIdAndId(userId,id);
+            je.setActive(false);
+            journalRepo.saveAndFlush(je);
+            return journalRepo.findByUserIdAndIsActive(userId,true);
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
+    }
 }
