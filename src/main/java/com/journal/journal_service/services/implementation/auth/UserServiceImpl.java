@@ -1,5 +1,6 @@
 package com.journal.journal_service.services.implementation.auth;
 
+import com.journal.journal_service.dto.CustomUserDetails;
 import com.journal.journal_service.dto.RegisterDto;
 import com.journal.journal_service.models.auth.User;
 import com.journal.journal_service.models.auth.UserDetails;
@@ -20,10 +21,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -86,8 +84,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                             registerForm.getPassword()
                     )
             );
+            User user = userRepo.findByUsernameAndIsActive(registerForm.getUsername(), true).orElseThrow(()->new UsernameNotFoundException("User not found"));
 
-            String jwtToken = JwtUtil.generateToken(authentication.getName());
+            String jwtToken = JwtUtil.generateToken(user);
             Map<String, String> response = new HashMap<>();
             response.put("token", jwtToken);
             response.put("message", "Login successful");
@@ -101,7 +100,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public org.springframework.security.core.userdetails.UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepo.findByUsername(username)
+        User user = userRepo.findByUsernameAndIsActive(username,true)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
 
         log.info("Attempting to load user with username: {}", username);
@@ -110,8 +109,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
 
-        log.info("USER LOADED: {} with roles: {}", user.getUsername(), user.getRoles());
-
-        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), authorities);
+        log.info("USER LOADED: {} with roles: {} with ID: {}", user.getUsername(), user.getRoles(), user.getId());
+        CustomUserDetails cud = new CustomUserDetails(user.getId(),user.getUsername(), user.getPassword(), authorities);
+        return cud;
     }
+
 }

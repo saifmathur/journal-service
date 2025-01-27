@@ -16,10 +16,10 @@ public class AuthController {
     @Autowired
     UserService userService;
 
-    @PostMapping("/token")
-    public String generateToken(@RequestParam String username) {
-        return JwtUtil.generateToken(username);
-    }
+//    @PostMapping("/token")
+//    public String generateToken(@RequestParam String username) {
+//        return JwtUtil.generateToken(username);
+//    }
 
     @PostMapping("/register")
     public ResponseEntity<Map<String, String>> createUser(@ModelAttribute RegisterDto registerForm) throws Exception {

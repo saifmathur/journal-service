@@ -25,10 +25,10 @@ public class JournalController {
         return "TEST STRING SENT";
     }
 
-    @GetMapping("/getEntries/{userId}")
-    public List<JournalEntry> getEntries(@PathVariable Long userId) throws Exception {
+    @GetMapping("/getEntries")
+    public List<JournalEntry> getEntries() throws Exception {
         try{
-            return journalService.getAllEntriesByUserId(userId);
+            return journalService.getAllEntriesByUserId();
         } catch (Exception e) {
             throw new Exception(e);
         }

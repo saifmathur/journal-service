@@ -4,9 +4,11 @@ import com.journal.journal_service.dto.TaskFormDto;
 import com.journal.journal_service.models.JournalEntry;
 import com.journal.journal_service.repository.JournalRepo;
 import com.journal.journal_service.services.JournalService;
+import com.journal.journal_service.utility.JwtUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
@@ -21,11 +23,15 @@ public class JournalServiceImpl implements JournalService {
     @Autowired
     JournalRepo journalRepo;
 
+    @Autowired
+    JwtUtil jwtUtil;
+
     @Override
     public String createJournalEntry(TaskFormDto taskFormDto) throws Exception {
         try {
             JournalEntry je = new JournalEntry();
-            je.setUserId(taskFormDto.getUserId());
+            Long userId = jwtUtil.getUserId();
+            je.setUserId(userId);
             je.setEntryTitle(taskFormDto.getTaskName());
             je.setWorkType(taskFormDto.getTypeOfWork());
             je.setDate(new SimpleDateFormat("yyyy-MM-dd").parse(taskFormDto.getDate()));
@@ -39,7 +45,12 @@ public class JournalServiceImpl implements JournalService {
     }
 
     @Override
-    public List<JournalEntry> getAllEntriesByUserId(Long userId) {
-        return journalRepo.findByUserId(userId);
+    public List<JournalEntry> getAllEntriesByUserId() throws Exception {
+        try{
+            Long userId = jwtUtil.getUserId();
+            return journalRepo.findByUserId(userId);
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
     }
 }
