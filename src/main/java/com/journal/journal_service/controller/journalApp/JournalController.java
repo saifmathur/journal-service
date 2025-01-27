@@ -1,9 +1,8 @@
-package com.journal.journal_service.controller;
+package com.journal.journal_service.controller.journalApp;
 
 import com.journal.journal_service.dto.TaskFormDto;
 import com.journal.journal_service.models.JournalEntry;
 import com.journal.journal_service.services.JournalService;
-import com.journal.journal_service.services.implementation.JournalServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +25,10 @@ public class JournalController {
         return "TEST STRING SENT";
     }
 
-    @GetMapping("/getEntries/{userId}")
-    public List<JournalEntry> getEntries(@PathVariable Long userId) throws Exception {
+    @GetMapping("/getEntries")
+    public List<JournalEntry> getEntries() throws Exception {
         try{
-            return journalService.getAllEntriesByUserId(userId);
+            return journalService.getAllEntriesByUserId();
         } catch (Exception e) {
             throw new Exception(e);
         }

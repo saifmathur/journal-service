@@ -1,7 +1,5 @@
 package com.journal.journal_service.config;
 
-import org.hibernate.cfg.Environment;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -15,7 +13,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addMapping("/**")  // Allow CORS for all paths
                 .allowedOrigins("http://localhost:4200","https://journal-"+System.getenv("VERCEL_APP_ID")+"-saifmathurs-projects.vercel.app/")  // Allow your Angular app origin
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")  // Allowed HTTP methods
-                .allowedHeaders("*")  // Allow all headers
+                .allowedHeaders("Authorization", "Content-Type")  // Allow all headers
                 .allowCredentials(true);  // Allow sending credentials (cookies, authorization headers)
     }
 }

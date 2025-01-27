@@ -9,5 +9,5 @@ public interface JournalService {
 
     String createJournalEntry(TaskFormDto taskFormDto) throws Exception;
 
-    List<JournalEntry> getAllEntriesByUserId(Long userId);
+    List<JournalEntry> getAllEntriesByUserId() throws Exception;
 }

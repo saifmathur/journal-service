@@ -1,4 +1,4 @@
-package com.journal.journal_service.controller;
+package com.journal.journal_service.controller.journalApp;
 
 import com.journal.journal_service.dto.WorkTypeDto;
 import com.journal.journal_service.models.WorkType;

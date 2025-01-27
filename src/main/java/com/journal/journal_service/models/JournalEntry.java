@@ -16,13 +16,6 @@ import java.util.Date;
 @Data
 public class JournalEntry {
 
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,11 +27,32 @@ public class JournalEntry {
 
     private String entryTitle;
 
+
+    @Column(nullable = false)
+    private Boolean isActive = true;
+
+
     @ManyToOne
     @JoinColumn(name = "work_type_id", nullable = true)
     private WorkType workType;
 
+    public void setActive(Boolean active) {
+        isActive = active;
+    }
+
     private String description;
+
+    public Boolean getActive() {
+        return isActive;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
 
     public void setId(Long id) {
         this.id = id;
