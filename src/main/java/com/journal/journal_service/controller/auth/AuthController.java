@@ -18,10 +18,6 @@ public class AuthController {
     @Autowired
     UserService userService;
 
-//    @PostMapping("/token")
-//    public String generateToken(@RequestParam String username) {
-//        return JwtUtil.generateToken(username);
-//    }
 
     @PostMapping("/register")
     public ResponseEntity<Map<String, String>> createUser(@ModelAttribute RegisterDto registerForm) throws Exception {
@@ -39,7 +35,7 @@ public class AuthController {
     }
 
     @GetMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletRequest request) {
+    public ResponseEntity<String> logout(HttpServletRequest request) {
         // Invalidate the session
         HttpSession session = request.getSession(false);
         if (session != null) {

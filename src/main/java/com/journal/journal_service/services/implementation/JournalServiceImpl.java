@@ -48,7 +48,7 @@ public class JournalServiceImpl implements JournalService {
     public List<JournalEntry> getAllEntriesByUserId() throws Exception {
         try{
             Long userId = jwtUtil.getUserId();
-            return journalRepo.findByUserId(userId);
+            return journalRepo.findByUserIdAndIsActive(userId,true);
         } catch (Exception e) {
             throw new Exception(e);
         }
