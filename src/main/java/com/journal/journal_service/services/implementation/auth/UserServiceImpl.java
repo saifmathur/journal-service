@@ -21,6 +21,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -54,9 +57,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             }
             user.setUsername(registerForm.getUsername());
             user.setPassword(passwordEncoder.encode(registerForm.getPassword()));
-            userDetails.setAge(registerForm.getAge());
+
             userDetails.setPhone(registerForm.getPhone());
             userDetails.setDOB(registerForm.getDOB());
+            userDetails.setAge(getAge(registerForm.getDOB()));
+            userDetails.setFirstName(registerForm.getFirstName());
+            userDetails.setLastName(registerForm.getLastName());
             userDetails.setAddressLine1(registerForm.getAddressLine1());
             userDetails.setAddressLine2(registerForm.getAddressLine2());
             userDetails.setEmail(registerForm.getEmail());
@@ -85,11 +91,15 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                     )
             );
             User user = userRepo.findByUsernameAndIsActive(registerForm.getUsername(), true).orElseThrow(()->new UsernameNotFoundException("User not found"));
+            String fullName = user.getUserDetails().getFirstName()+" "+user.getUserDetails().getLastName().toString();
 
             String jwtToken = JwtUtil.generateToken(user);
             Map<String, String> response = new HashMap<>();
             response.put("token", jwtToken);
             response.put("message", "Login successful");
+            response.put("fullName", fullName);
+            response.put("initials", getInitials(fullName));
+            response.put("username", user.getUsername());
             response.put("status", "200");
             return response;
 
@@ -112,6 +122,27 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         log.info("USER LOADED: {} with roles: {} with ID: {}", user.getUsername(), user.getRoles(), user.getId());
         CustomUserDetails cud = new CustomUserDetails(user.getId(),user.getUsername(), user.getPassword(), authorities);
         return cud;
+    }
+
+    public String getAge(String dob) throws Exception {
+        try{
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate formatDob = LocalDate.parse(dob, formatter);
+            return String.valueOf(Period.between(formatDob, LocalDate.now()).getYears());
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
+    }
+
+    public String getInitials(String fullName){
+        String[] parts = fullName.split(" ");
+        StringBuilder initials = new StringBuilder();
+        for (String part : parts) {
+            if (!part.isEmpty()) {
+                initials.append(Character.toUpperCase(part.charAt(0)));
+            }
+        }
+        return initials.toString();
     }
 
 }
