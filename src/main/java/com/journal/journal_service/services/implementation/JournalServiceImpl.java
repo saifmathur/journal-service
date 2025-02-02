@@ -12,6 +12,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -31,10 +33,14 @@ public class JournalServiceImpl implements JournalService {
         try {
             JournalEntry je = new JournalEntry();
             Long userId = jwtUtil.getUserId();
+            if(taskFormDto.getTaskId()!=null){
+                je = journalRepo.findByIdAndIsActive(taskFormDto.getTaskId(),true);
+            }
             je.setUserId(userId);
             je.setEntryTitle(taskFormDto.getTaskName());
             je.setWorkType(taskFormDto.getTypeOfWork());
             je.setDate(new SimpleDateFormat("yyyy-MM-dd").parse(taskFormDto.getDate()));
+            je.setLastModified(LocalDateTime.now());
             je.setDescription(taskFormDto.getDescription());
             journalRepo.saveAndFlush(je);
             return "Journal Entry created for " + je.getDate();
@@ -48,7 +54,7 @@ public class JournalServiceImpl implements JournalService {
     public List<JournalEntry> getAllEntriesByUserId() throws Exception {
         try{
             Long userId = jwtUtil.getUserId();
-            return journalRepo.findByUserIdAndIsActive(userId,true);
+            return journalRepo.findByUserIdAndIsActiveOrderByLastModifiedDesc(userId,true);
         } catch (Exception e) {
             throw new Exception(e);
         }

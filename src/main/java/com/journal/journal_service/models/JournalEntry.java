@@ -4,7 +4,9 @@ package com.journal.journal_service.models;
 import jakarta.persistence.*;
 import lombok.*;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.data.annotation.LastModifiedDate;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Setter
@@ -27,6 +29,10 @@ public class JournalEntry {
 
     private String entryTitle;
 
+
+    @LastModifiedDate
+    @Column(name = "last_modified", nullable = false)
+    private LocalDateTime lastModified;
 
     @Column(nullable = false)
     private Boolean isActive = true;
@@ -52,6 +58,12 @@ public class JournalEntry {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }public LocalDateTime getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(LocalDateTime lastModified) {
+        this.lastModified = lastModified;
     }
 
     public void setId(Long id) {
