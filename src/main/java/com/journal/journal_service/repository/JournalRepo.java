@@ -12,4 +12,8 @@ public interface JournalRepo extends JpaRepository<JournalEntry, Long> {
     List<JournalEntry> findByUserIdAndIsActive(Long userId, boolean b);
 
     JournalEntry findByUserIdAndId(Long userId, Long id);
+
+    JournalEntry findByIdAndIsActive(Long taskId, boolean b);
+
+    List<JournalEntry> findByUserIdAndIsActiveOrderByLastModifiedDesc(Long userId, boolean b);
 }

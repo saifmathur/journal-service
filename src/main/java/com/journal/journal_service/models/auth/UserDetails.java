@@ -20,13 +20,27 @@ public class UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    public String getAge() {
+        return age;
+    }
+
     private String email;
     private String DOB;
+
+    public void setAge(String age) {
+        this.age = age;
+    }
+
+    private String firstName;
+    private String lastName;
+
+
+    private String age;
+
 
     private String addressLine1;
     private String addressLine2;
 
-    private String age;
     private String phone;
 
     @CreationTimestamp
@@ -60,9 +74,7 @@ public class UserDetails {
         this.addressLine2 = addressLine2;
     }
 
-    public void setAge(String age) {
-        this.age = age;
-    }
+
 
     public void setPhone(String phone) {
         this.phone = phone;
@@ -76,12 +88,28 @@ public class UserDetails {
         this.user = user;
     }
 
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
     public Long getId() {
         return id;
     }
 
     public String getEmail() {
         return email;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
     }
 
     public String getDOB() {
@@ -96,9 +124,7 @@ public class UserDetails {
         return addressLine2;
     }
 
-    public String getAge() {
-        return age;
-    }
+
 
     public String getPhone() {
         return phone;

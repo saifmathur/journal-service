@@ -5,6 +5,17 @@ import com.journal.journal_service.models.WorkType;
 public class TaskFormDto {
 
     private Long userId;
+
+    public Long getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(Long taskId) {
+        this.taskId = taskId;
+    }
+
+    private Long taskId;
+
     private String taskName;
     private WorkType typeOfWork;
 

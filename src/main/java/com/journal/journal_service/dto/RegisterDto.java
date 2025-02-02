@@ -6,14 +6,29 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@Setter
+@Getter
 public class RegisterDto {
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
 
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
 
     private String username;
 
 
     private String password;
 
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
 
     private Boolean isActive = true;
 
@@ -30,7 +45,8 @@ public class RegisterDto {
     private String addressLine2;
 
 
-    private String age;
+    private String firstName;
+    private String lastName;
 
 
     private String phone;
@@ -66,9 +82,6 @@ public class RegisterDto {
         this.addressLine2 = addressLine2;
     }
 
-    public void setAge(String age) {
-        this.age = age;
-    }
 
     public void setPhone(String phone) {
         this.phone = phone;
@@ -106,9 +119,7 @@ public class RegisterDto {
         return addressLine2;
     }
 
-    public String getAge() {
-        return age;
-    }
+
 
     public String getPhone() {
         return phone;
