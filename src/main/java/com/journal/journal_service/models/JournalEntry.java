@@ -2,6 +2,7 @@ package com.journal.journal_service.models;
 
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -46,6 +47,7 @@ public class JournalEntry {
         isActive = active;
     }
 
+    @Size(max = 5000, message = "description must be up to 5000 characters")
     private String description;
 
     public Boolean getActive() {
