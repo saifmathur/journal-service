@@ -2,7 +2,6 @@ package com.journal.journal_service.models;
 
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -33,7 +32,7 @@ public class JournalEntry {
 
     @LastModifiedDate
     @Column(name = "last_modified", nullable = false)
-    private LocalDateTime lastModified;
+    private Date lastModified;
 
     @Column(nullable = false)
     private Boolean isActive = true;
@@ -61,11 +60,11 @@ public class JournalEntry {
 
     public void setUserId(Long userId) {
         this.userId = userId;
-    }public LocalDateTime getLastModified() {
+    }public Date getLastModified() {
         return lastModified;
     }
 
-    public void setLastModified(LocalDateTime lastModified) {
+    public void setLastModified(Date lastModified) {
         this.lastModified = lastModified;
     }
 
