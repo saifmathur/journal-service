@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -47,6 +48,15 @@ public class JournalController {
     public List<JournalEntry> deleteEntry(@PathVariable Long id) throws Exception {
         try {
             return journalService.deleteEntry(id);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @GetMapping("/journalStats")
+    public Map<String,Object> journalStats() throws Exception {
+        try {
+            return journalService.journalStats();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

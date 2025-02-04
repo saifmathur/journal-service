@@ -11,6 +11,9 @@ import java.util.Date;
 public class WorkTypeDto {
     private String workType;
     private Long userId;
+    private Long workTypeId;
+    private String workTypeName;
+    private Long totalEntries;
 
     public void setDate(Date date) {
         this.date = date;

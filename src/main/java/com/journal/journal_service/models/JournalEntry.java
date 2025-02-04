@@ -47,7 +47,8 @@ public class JournalEntry {
         isActive = active;
     }
 
-    @Size(max = 5000, message = "description must be up to 5000 characters")
+    //@Lob
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     public Boolean getActive() {
