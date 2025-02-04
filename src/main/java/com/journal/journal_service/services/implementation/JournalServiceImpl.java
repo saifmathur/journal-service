@@ -43,7 +43,7 @@ public class JournalServiceImpl implements JournalService {
             je.setEntryTitle(taskFormDto.getTaskName());
             je.setWorkType(taskFormDto.getTypeOfWork());
             je.setDate(new SimpleDateFormat("yyyy-MM-dd").parse(taskFormDto.getDate()));
-            je.setLastModified(LocalDateTime.now());
+            je.setLastModified(new SimpleDateFormat("yyyy-MM-dd").parse(LocalDateTime.now().toString()));
             je.setDescription(taskFormDto.getDescription());
             journalRepo.saveAndFlush(je);
             return "Journal Entry created for " + je.getDate();
