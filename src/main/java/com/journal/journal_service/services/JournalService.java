@@ -4,6 +4,7 @@ import com.journal.journal_service.dto.TaskFormDto;
 import com.journal.journal_service.models.JournalEntry;
 
 import java.util.List;
+import java.util.Map;
 
 public interface JournalService {
 
@@ -12,4 +13,6 @@ public interface JournalService {
     List<JournalEntry> getAllEntriesByUserId() throws Exception;
 
     List<JournalEntry> deleteEntry(Long id) throws Exception;
+
+    Map<String, Object> journalStats() throws Exception;
 }
