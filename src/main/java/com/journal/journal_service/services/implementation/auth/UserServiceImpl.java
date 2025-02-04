@@ -109,6 +109,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    public Boolean checkDuplicateUserName(String username) throws Exception {
+        return userRepo.findByUsername(username).isPresent();
+    }
+
+    @Override
     public org.springframework.security.core.userdetails.UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepo.findByUsernameAndIsActive(username,true)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));

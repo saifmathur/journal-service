@@ -19,6 +19,11 @@ public class AuthController {
     UserService userService;
 
 
+    @PostMapping("/checkDuplicateUserName")
+    public ResponseEntity<Boolean> checkDuplicateUserName(@RequestBody RegisterDto registerForm) throws Exception {
+        return ResponseEntity.ok(userService.checkDuplicateUserName(registerForm.getUsername()));
+    }
+
     @PostMapping("/register")
     public ResponseEntity<Map<String, String>> createUser(@ModelAttribute RegisterDto registerForm) throws Exception {
         return ResponseEntity.ok(userService.registerUser(registerForm));

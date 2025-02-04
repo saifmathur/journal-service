@@ -9,4 +9,6 @@ public interface UserService {
     Map<String, String> registerUser(RegisterDto registerForm) throws Exception;
 
     Map<String, String> login(RegisterDto registerForm);
+
+    Boolean checkDuplicateUserName(String username) throws Exception;
 }
