@@ -15,4 +15,6 @@ public interface JournalService {
     List<JournalEntry> deleteEntry(Long id) throws Exception;
 
     Map<String, Object> journalStats() throws Exception;
+
+    byte[] exportAllEntries() throws Exception;
 }
