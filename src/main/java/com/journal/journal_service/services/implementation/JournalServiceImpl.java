@@ -9,15 +9,20 @@ import com.journal.journal_service.models.JournalEntry;
 import com.journal.journal_service.repository.JournalRepo;
 import com.journal.journal_service.services.JournalService;
 import com.journal.journal_service.utility.JwtUtil;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 
@@ -97,4 +102,50 @@ public class JournalServiceImpl implements JournalService {
         }
 
     }
+
+
+    @Override
+    public byte[] exportAllEntries() throws Exception {
+        try {
+            Long userId = jwtUtil.getUserId();
+            List<JournalEntry> allEntries = journalRepo.findByUserIdAndIsActive(userId,true);
+            LocalDate date = LocalDate.now();
+            DateTimeFormatter formatterD = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+            String formattedDate = date.format(formatterD);
+            try(Workbook workbook = new XSSFWorkbook()){
+                Sheet sheet = workbook.createSheet(formattedDate+"_Entries_user_"+userId);
+                Row headerRow = sheet.createRow(0);
+                String[] columns = {"Title", "Category","Description","Created Date"};
+                for (int i = 0; i < columns.length; i++) {
+                    Cell cell = headerRow.createCell(i);
+                    cell.setCellValue(columns[i]);
+                    CellStyle headerStyle = workbook.createCellStyle();
+                    headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+                    headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                    cell.setCellStyle(headerStyle);
+                }
+                int rowIndex = 1;
+                SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+                for (JournalEntry entity : allEntries) {
+                    Row row = sheet.createRow(rowIndex++);
+                    row.createCell(0).setCellValue(entity.getEntryTitle());
+                    row.createCell(1).setCellValue(entity.getWorkType().getWorkType());
+                    row.createCell(2).setCellValue(Jsoup.parse(entity.getDescription()).text());
+                    row.createCell(3).setCellValue(formatter.format(entity.getDate()));
+                }
+                for (int i = 0; i < columns.length; i++) {
+                    sheet.autoSizeColumn(i);
+                }
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                workbook.write(out);
+                return out.toByteArray();
+            }
+        } catch (Exception e) {
+            log.error("Error while exporting data:"+e.getMessage());
+            throw new Exception(e);
+        }
+
+    }
+
+
 }

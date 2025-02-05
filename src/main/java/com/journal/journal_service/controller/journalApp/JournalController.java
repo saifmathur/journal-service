@@ -6,6 +6,9 @@ import com.journal.journal_service.services.JournalService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -62,4 +65,19 @@ public class JournalController {
         }
     }
 
+    @GetMapping("/exportAllEntries")
+    public ResponseEntity<byte[]> exportAllEntries() throws Exception {
+        try {
+            byte[] excelData =journalService.exportAllEntries();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            headers.setContentDispositionFormData("attachment", "data-export.xlsx");
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(excelData);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

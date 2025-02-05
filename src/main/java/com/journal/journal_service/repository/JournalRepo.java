@@ -32,4 +32,5 @@ public interface JournalRepo extends JpaRepository<JournalEntry, Long> {
             "GROUP BY \n" +
             "    je.work_type_id, wt.work_type;",nativeQuery = true)
     List<Object[]> getStatsGroupedByWorkType();
+
 }
