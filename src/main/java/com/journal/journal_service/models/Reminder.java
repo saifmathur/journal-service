@@ -6,6 +6,7 @@ import lombok.*;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
 
@@ -47,7 +48,7 @@ public class Reminder {
 
     @LastModifiedDate
     @Column(name = "last_modified", nullable = false)
-    private Date lastModified;
+    private LocalDateTime lastModified;
 
     public void setId(Long id) {
         this.id = id;
@@ -55,6 +56,14 @@ public class Reminder {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public LocalDateTime getLastModified() {
+        return lastModified;
     }
 
     public void setTitle(String title) {
@@ -77,6 +86,14 @@ public class Reminder {
         isActive = active;
     }
 
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
+    }
+
+    public void setLastModified(LocalDateTime lastModified) {
+        this.lastModified = lastModified;
+    }
+
     public void setPriority(String priority) {
         this.priority = priority;
     }
@@ -85,9 +102,7 @@ public class Reminder {
         this.frequency = frequency;
     }
 
-    public void setLastModified(Date lastModified) {
-        this.lastModified = lastModified;
-    }
+
 
     public Long getId() {
         return id;
@@ -125,7 +140,5 @@ public class Reminder {
         return frequency;
     }
 
-    public Date getLastModified() {
-        return lastModified;
-    }
+
 }

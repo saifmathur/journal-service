@@ -41,11 +41,11 @@ public class ReminderServiceImpl implements ReminderService {
             reminder.setReminderTime(LocalTime.from((ZonedDateTime.parse(reminderDto.getReminderTime()))));
             reminder.setPriority(reminderDto.getPriority());
             reminder.setFrequency(reminderDto.getFrequency());
-            reminder.setLastModified(new SimpleDateFormat("yyyy-MM-dd").parse(LocalDateTime.now().toString()));
+            reminder.setLastModified(LocalDateTime.now());
 
             reminderRepo.saveAndFlush(reminder);
 
-            return reminderRepo.findByUserIdAndIsDeletedFalse(userId);
+            return reminderRepo.findByUserIdAndIsDeletedFalseOrderByLastModifiedDesc(userId);
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("Error creating reminder" + e.getMessage());
@@ -55,7 +55,7 @@ public class ReminderServiceImpl implements ReminderService {
     @Override
     public List<Reminder> getAllRemindersByUserId() throws Exception {
         try {
-            return reminderRepo.findByUserIdAndIsDeletedFalse(jwtUtil.getUserId());
+            return reminderRepo.findByUserIdAndIsDeletedFalseOrderByLastModifiedDesc(jwtUtil.getUserId());
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("Error fetching reminders" + e.getMessage());
@@ -74,6 +74,7 @@ public class ReminderServiceImpl implements ReminderService {
             if(!state){
                 reminder.setActive(true);
             }
+            reminder.setLastModified(LocalDateTime.now());
             reminderRepo.saveAndFlush(reminder);
             res.put("reminders",getAllRemindersByUserId());
             res.put("state",state);
