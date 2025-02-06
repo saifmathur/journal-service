@@ -1,6 +1,7 @@
 package com.journal.journal_service.services.implementation;
 
 import com.journal.journal_service.dto.ReminderDto;
+import com.journal.journal_service.models.JournalEntry;
 import com.journal.journal_service.models.Reminder;
 import com.journal.journal_service.repository.ReminderRepo;
 import com.journal.journal_service.services.JournalService;
@@ -81,6 +82,19 @@ public class ReminderServiceImpl implements ReminderService {
             return res;
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<Reminder> deleteReminder(Long id) throws Exception {
+        try {
+            Long userId = jwtUtil.getUserId();
+            Reminder je = reminderRepo.findByUserIdAndIdAndIsDeletedFalse(userId, id);
+            je.setDeleted(true);
+            reminderRepo.saveAndFlush(je);
+            return reminderRepo.findByUserIdAndIsDeletedFalseOrderByLastModifiedDesc(userId);
+        } catch (Exception e) {
+            throw new Exception(e);
         }
     }
 }

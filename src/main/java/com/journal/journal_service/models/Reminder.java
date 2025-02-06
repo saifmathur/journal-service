@@ -8,7 +8,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Date;
 
 @Setter
 @Getter
@@ -58,7 +57,7 @@ public class Reminder {
         this.userId = userId;
     }
 
-    public boolean isDeleted() {
+    public boolean isDeleted(boolean b) {
         return isDeleted;
     }
 

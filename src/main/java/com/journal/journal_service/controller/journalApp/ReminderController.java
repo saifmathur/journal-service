@@ -49,4 +49,13 @@ public class ReminderController {
         }
     }
 
+    @GetMapping("/delete/{id}")
+    public ResponseEntity<List<Reminder>> deleteReminder (@PathVariable Long id) throws Exception {
+        try{
+            return ResponseEntity.ok(reminderService.deleteReminder(id));
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
+    }
+
 }
