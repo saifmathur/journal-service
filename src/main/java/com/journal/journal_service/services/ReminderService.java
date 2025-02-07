@@ -17,4 +17,6 @@ public interface ReminderService {
     Map<String,Object> setReminderActiveOrInactive(Long id) throws Exception;
 
     List<Reminder> deleteReminder(Long id) throws Exception;
+
+    List<Reminder> toggleAllReminders() throws Exception;
 }

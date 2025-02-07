@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 import java.time.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -95,6 +96,22 @@ public class ReminderServiceImpl implements ReminderService {
             je.setDeleted(true);
             reminderRepo.saveAndFlush(je);
             return reminderRepo.findByUserIdAndIsDeletedFalseOrderByLastModifiedDesc(userId);
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
+    }
+
+    @Override
+    public List<Reminder> toggleAllReminders() throws Exception {
+        try{
+            List<Reminder> allActiveReminders = reminderRepo.findByUserIdAndIsActiveAndIsDeletedFalse(jwtUtil.getUserId(), true);
+            List<Reminder> toBeSubmitted  = new ArrayList<>();
+            for(Reminder r: allActiveReminders){
+                r.setActive(false);
+                toBeSubmitted.add(r);
+            }
+            reminderRepo.saveAllAndFlush(toBeSubmitted);
+            return reminderRepo.findByUserIdAndIsDeletedFalseOrderByLastModifiedDesc(jwtUtil.getUserId());
         } catch (Exception e) {
             throw new Exception(e);
         }

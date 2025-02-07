@@ -58,4 +58,13 @@ public class ReminderController {
         }
     }
 
+    @GetMapping("/toggleAllReminders")
+    public ResponseEntity<List<Reminder>> toggleAllReminders () throws Exception {
+        try{
+            return ResponseEntity.ok(reminderService.toggleAllReminders());
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
+    }
+
 }
