@@ -16,4 +16,6 @@ public interface ReminderRepo extends JpaRepository<Reminder, Long> {
     List<Reminder> findByUserIdAndIsDeletedFalseOrderByLastModifiedDesc(Long userId);
 
     Reminder findByUserIdAndId(Long userId, Long id);
+
+    Reminder findByIdAndIsDeletedFalse(Long id);
 }

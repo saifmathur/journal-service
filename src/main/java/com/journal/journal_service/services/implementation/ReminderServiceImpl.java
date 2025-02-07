@@ -13,10 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,11 +32,16 @@ public class ReminderServiceImpl implements ReminderService {
         try {
             Long userId = jwtUtil.getUserId();
             Reminder reminder = new Reminder();
+            if (reminderDto.getReminderId() != null) {
+                reminder = reminderRepo.findByIdAndIsDeletedFalse(reminderDto.getReminderId());
+            }
             reminder.setUserId(userId);
             reminder.setTitle(reminderDto.getTitle());
             reminder.setNotes(reminderDto.getNotes());
-            reminder.setReminderDate(LocalDate.from(ZonedDateTime.parse(reminderDto.getReminderDate())));
-            reminder.setReminderTime(LocalTime.from((ZonedDateTime.parse(reminderDto.getReminderTime()))));
+            Instant instant = Instant.parse(reminderDto.getReminderDate());
+            reminder.setReminderDate(instant.atZone(ZoneOffset.UTC).toLocalDate());
+            reminder.setReminderTime(instant.atZone(ZoneOffset.UTC).toLocalTime());
+
             reminder.setPriority(reminderDto.getPriority());
             reminder.setFrequency(reminderDto.getFrequency());
             reminder.setLastModified(LocalDateTime.now());
