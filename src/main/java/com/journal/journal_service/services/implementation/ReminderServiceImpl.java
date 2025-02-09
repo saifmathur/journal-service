@@ -40,8 +40,12 @@ public class ReminderServiceImpl implements ReminderService {
             reminder.setTitle(reminderDto.getTitle());
             reminder.setNotes(reminderDto.getNotes());
             Instant instant = Instant.parse(reminderDto.getReminderDate());
-            reminder.setReminderDate(instant.atZone(ZoneOffset.UTC).toLocalDate());
-            reminder.setReminderTime(instant.atZone(ZoneOffset.UTC).toLocalTime());
+//            reminder.setReminderDate(instant.atZone(ZoneOffset.UTC).toLocalDate());
+//            reminder.setReminderTime(instant.atZone(ZoneOffset.UTC).toLocalTime());
+            LocalDate localDate = OffsetDateTime.parse(reminderDto.getReminderDate()).toLocalDate();
+            LocalTime localTime = OffsetDateTime.parse(reminderDto.getReminderTime()).toLocalTime().withNano(0); //removes ms
+            reminder.setReminderDate(localDate);
+            reminder.setReminderTime(localTime);
 
             reminder.setPriority(reminderDto.getPriority());
             reminder.setFrequency(reminderDto.getFrequency());
