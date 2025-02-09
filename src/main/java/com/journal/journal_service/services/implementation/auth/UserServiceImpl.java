@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,6 +22,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
@@ -76,6 +78,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         } catch (DataIntegrityViolationException e) {
             throw new DataIntegrityViolationException("Found duplicate username.");
         } catch (Exception e) {
+            e.printStackTrace();
             throw new Exception("Error while registering user.");
         }
 
@@ -109,6 +112,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    public Boolean checkDuplicateUserName(String username) {
+        return userRepo.findByUsername(username).isPresent();
+    }
+
+    @Override
     public org.springframework.security.core.userdetails.UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepo.findByUsernameAndIsActive(username,true)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
@@ -125,12 +133,30 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     public String getAge(String dob) throws Exception {
-        try{
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            LocalDate formatDob = LocalDate.parse(dob, formatter);
-            return String.valueOf(Period.between(formatDob, LocalDate.now()).getYears());
+//        try{
+//            SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
+//            String formattedDate = outputFormat.format(dob);
+//            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+//            LocalDate formatDob = LocalDate.parse(dob, formatter);
+//            return String.valueOf(Period.between(formatDob, LocalDate.now()).getYears());
+//        } catch (Exception e) {
+//            throw new Exception(e);
+//        }
+        try {
+            // Define the input date format that matches the given date string
+            SimpleDateFormat inputFormat = new SimpleDateFormat("EEE MMM dd yyyy HH:mm:ss 'GMT'Z (z)");
+
+            // Parse the input string into a Date object
+            Date parsedDate = inputFormat.parse(dob);
+
+            // Convert the Date object into LocalDate
+            LocalDate formatDob = new java.sql.Date(parsedDate.getTime()).toLocalDate();
+
+            // Calculate the age by finding the difference in years
+            Period period = Period.between(formatDob, LocalDate.now());
+            return String.valueOf(period.getYears());
         } catch (Exception e) {
-            throw new Exception(e);
+            throw new Exception("Error parsing date: " + e.getMessage(), e);
         }
     }
 

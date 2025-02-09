@@ -44,7 +44,10 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
-
+    @GetMapping("/checkDuplicateUserName/{username}")
+    public ResponseEntity<Boolean> checkDuplicateUserName(@PathVariable String username) {
+        return ResponseEntity.ok(userService.checkDuplicateUserName(username));
+    }
 
 }
 
