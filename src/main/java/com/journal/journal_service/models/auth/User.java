@@ -24,13 +24,7 @@ public class User {
 
     private String password;
 
-    public void setRoles(String roles) {
-        this.roles = roles;
-    }
 
-    public String getRoles() {
-        return roles;
-    }
 
     private String roles;
 
@@ -46,7 +40,13 @@ public class User {
 //    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 //    private List<UserServiceMapping> userServiceMappings;
 
+    public void setRoles(String roles) {
+        this.roles = roles;
+    }
 
+    public String getRoles() {
+        return roles;
+    }
     public void setId(Long id) {
         this.id = id;
     }
