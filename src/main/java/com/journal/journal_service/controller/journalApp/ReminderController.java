@@ -67,4 +67,13 @@ public class ReminderController {
         }
     }
 
+    @GetMapping("/getActiveReminders")
+    public ResponseEntity<Integer> getActiveReminders () throws Exception {
+        try{
+            return ResponseEntity.ok(reminderService.getActiveReminders());
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
+    }
+
 }

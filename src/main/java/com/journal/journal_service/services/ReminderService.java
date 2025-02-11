@@ -1,7 +1,6 @@
 package com.journal.journal_service.services;
 
 import com.journal.journal_service.dto.ReminderDto;
-import com.journal.journal_service.dto.TaskFormDto;
 import com.journal.journal_service.models.Reminder;
 import org.springframework.stereotype.Component;
 
@@ -19,4 +18,6 @@ public interface ReminderService {
     List<Reminder> deleteReminder(Long id) throws Exception;
 
     List<Reminder> toggleAllReminders() throws Exception;
+
+    int getActiveReminders() throws Exception;
 }

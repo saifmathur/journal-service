@@ -1,10 +1,8 @@
 package com.journal.journal_service.services.implementation;
 
 import com.journal.journal_service.dto.ReminderDto;
-import com.journal.journal_service.models.JournalEntry;
 import com.journal.journal_service.models.Reminder;
 import com.journal.journal_service.repository.ReminderRepo;
-import com.journal.journal_service.services.JournalService;
 import com.journal.journal_service.services.ReminderService;
 import com.journal.journal_service.utility.JwtUtil;
 import org.slf4j.Logger;
@@ -12,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.text.SimpleDateFormat;
 import java.time.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -119,5 +116,10 @@ public class ReminderServiceImpl implements ReminderService {
         } catch (Exception e) {
             throw new Exception(e);
         }
+    }
+
+    @Override
+    public int getActiveReminders() throws Exception {
+        return reminderRepo.findByUserIdAndIsActiveAndIsDeletedFalse(jwtUtil.getUserId(), true).size();
     }
 }
