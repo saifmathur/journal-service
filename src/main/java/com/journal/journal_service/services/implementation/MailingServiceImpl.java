@@ -48,7 +48,7 @@ public class MailingServiceImpl implements MailingService {
                     .replace("{{reminderDate}}", reminder.getReminderDate().toString())
                     .replace("{{reminderTime}}", reminder.getReminderTime().toString())
                     .replace("{{reminderTitle}}",reminder.getTitle())
-                    .replace("{{notes}}", reminder.getNotes())
+                    .replace("{{notes}}", reminder.getNotes()==null?"NA":reminder.getNotes())
                     .replace("{{link}}","https://journal-taupe-theta.vercel.app/reminders");
 
 

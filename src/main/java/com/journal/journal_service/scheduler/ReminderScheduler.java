@@ -15,6 +15,8 @@ import org.springframework.stereotype.Component;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,8 +42,10 @@ public class ReminderScheduler {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
                 LocalDateTime dateTime = LocalDateTime.parse(reminder.getReminderDate() + "T" + reminder.getReminderTime(), formatter);
                 log.info(String.valueOf(dateTime));
-                log.info("NOW " + now);
-                if (dateTime.isEqual(LocalDateTime.now()) || dateTime.isBefore(LocalDateTime.now())) {
+                ZonedDateTime istTime = ZonedDateTime.now(ZoneId.of(reminder.getUserTimeZone()));
+                LocalDateTime localISTTime = istTime.toLocalDateTime();
+                log.info("NOW " + localISTTime);
+                if (dateTime.isEqual(localISTTime) || dateTime.isBefore(localISTTime)) {
                     //call mailing service here
                     mailingService.sendEmail(reminder);
                     if (reminder.getFrequency() == null) {

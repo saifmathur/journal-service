@@ -16,6 +16,15 @@ public class ReminderDto {
     private String priority;
     private String frequency;
     private String lastModified;
+    private String userTimeZone;
+
+    public String getUserTimeZone() {
+        return userTimeZone;
+    }
+
+    public void setUserTimeZone(String userTimeZone) {
+        this.userTimeZone = userTimeZone;
+    }
 
     public void setUserId(Long userId) {
         this.userId = userId;

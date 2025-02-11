@@ -45,6 +45,8 @@ public class Reminder {
 
     private String frequency;
 
+    private String userTimeZone;
+
     @LastModifiedDate
     @Column(name = "last_modified", nullable = false)
     private LocalDateTime lastModified;
@@ -111,8 +113,20 @@ public class Reminder {
         return userId;
     }
 
+    public void setUserTimeZone(String userTimeZone) {
+        this.userTimeZone = userTimeZone;
+    }
+
     public String getTitle() {
         return title;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public String getUserTimeZone() {
+        return userTimeZone;
     }
 
     public String getNotes() {

@@ -46,7 +46,7 @@ public class ReminderServiceImpl implements ReminderService {
             LocalTime localTime = OffsetDateTime.parse(reminderDto.getReminderTime()).toLocalTime().withNano(0); //removes ms
             reminder.setReminderDate(localDate);
             reminder.setReminderTime(localTime);
-
+            reminder.setUserTimeZone(reminderDto.getUserTimeZone());
             reminder.setPriority(reminderDto.getPriority());
             reminder.setFrequency(reminderDto.getFrequency());
             reminder.setLastModified(LocalDateTime.now());
