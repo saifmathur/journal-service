@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -55,7 +56,7 @@ public class MailingServiceImpl implements MailingService {
             helper.setTo(user.get().getUserDetails().getEmail());
             helper.setSubject(AppConstants.MAIL_SUBJECT_PREFIX + reminder.getTitle());
             helper.setText(template, true);
-            helper.setFrom("your_email@example.com");
+            helper.setFrom(Objects.requireNonNull(environment.getProperty("GMAIL_APP_MAIL_ID")));
             mailSender.send(message);
         } catch (Exception e) {
             throw new Exception("Failed to send mail" + e.getMessage());
