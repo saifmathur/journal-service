@@ -59,7 +59,9 @@ public class MailingServiceImpl implements MailingService {
             helper.setFrom(Objects.requireNonNull(environment.getProperty("GMAIL_APP_MAIL_ID")));
             mailSender.send(message);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new Exception("Failed to send mail" + e.getMessage());
+
         }
 
     }
