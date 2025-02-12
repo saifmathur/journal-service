@@ -42,6 +42,7 @@ public class ReminderScheduler {
                 LocalDateTime dateTime = LocalDateTime.parse(reminder.getReminderDate() + "T" + reminder.getReminderTime(), formatter);
                 log.info("USER's selected time:" + String.valueOf(dateTime));
                 ZonedDateTime istTime = ZonedDateTime.now(ZoneId.of(reminder.getUserTimeZone()));
+                log.info("TIME before converting ::" + istTime.toString());
                 LocalDateTime localISTTime = istTime.toLocalDateTime();
                 log.info("NOW " + localISTTime);
                 if (dateTime.isEqual(localISTTime) || dateTime.isBefore(localISTTime)) {
