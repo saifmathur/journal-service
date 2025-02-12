@@ -8,6 +8,7 @@ import com.journal.journal_service.services.MailingService;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -17,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Objects;
+import java.io.InputStream;
 import java.util.Optional;
 
 @Service
@@ -30,8 +32,6 @@ public class MailingServiceImpl implements MailingService {
     @Autowired
     UserRepo userRepo;
 
-    String path = "src/main/resources/templates/EmailTemplate.html";
-
     @Autowired
     public MailingServiceImpl(JavaMailSender mailSender) {
         this.mailSender = mailSender;
@@ -43,8 +43,15 @@ public class MailingServiceImpl implements MailingService {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
             Optional<User> user = userRepo.findById(reminder.getUserId());
+
+            ClassPathResource resource = new ClassPathResource("templates/EmailTemplate.html");
+            String template;
+
+            try (InputStream inputStream = resource.getInputStream()) {
+                template = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+            }
 //
-            String template = Files.readString(Paths.get(path), StandardCharsets.UTF_8)
+            template = template
                     .replace("{{name}}", user.get().getUserDetails().getFirstName() + " " + user.get().getUserDetails().getLastName())
                     .replace("{{reminderDate}}", reminder.getReminderDate().toString())
                     .replace("{{reminderTime}}", reminder.getReminderTime().toString())
