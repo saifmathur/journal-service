@@ -18,8 +18,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Component
 public class ReminderScheduler {
@@ -41,7 +40,7 @@ public class ReminderScheduler {
             for (Reminder reminder : toBeSet) {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
                 LocalDateTime dateTime = LocalDateTime.parse(reminder.getReminderDate() + "T" + reminder.getReminderTime(), formatter);
-                log.info(String.valueOf(dateTime));
+                log.info("USER's selected time:" + String.valueOf(dateTime));
                 ZonedDateTime istTime = ZonedDateTime.now(ZoneId.of(reminder.getUserTimeZone()));
                 LocalDateTime localISTTime = istTime.toLocalDateTime();
                 log.info("NOW " + localISTTime);
