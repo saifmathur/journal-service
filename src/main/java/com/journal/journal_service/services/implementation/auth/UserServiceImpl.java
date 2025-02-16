@@ -125,7 +125,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public Map<String, String> googleLogin(GoogleLoginRequestDto googleLoginRequestDto) throws Exception {
         try {
-            GoogleIdToken.Payload payload = GoogleTokenService.verifyToken(googleLoginRequestDto.getIdToken());
+            GoogleIdToken.Payload payload = googleTokenService.verifyToken(googleLoginRequestDto.getIdToken());
 
             // Step 2: Extract user info from the payload
             String email = payload.getEmail();

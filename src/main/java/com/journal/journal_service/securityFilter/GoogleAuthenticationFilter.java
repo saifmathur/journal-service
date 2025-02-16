@@ -9,6 +9,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -16,11 +17,13 @@ import java.io.IOException;
 import java.util.Collections;
 
 public class GoogleAuthenticationFilter extends OncePerRequestFilter {
-    private static final String GOOGLE_CLIENT_ID = "755025461022-71ektdco9qu31sqi1r8mrgv7jv77a41a.apps.googleusercontent.com";
+    @Value("${GOOGLE_CLIENT_ID}")
+    private String googleClientId;
+
 
     private final GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
             new NetHttpTransport(), JacksonFactory.getDefaultInstance()
-    ).setAudience(Collections.singletonList(GOOGLE_CLIENT_ID)).build();
+    ).setAudience(Collections.singletonList(googleClientId)).build();
 
 
     @Override
