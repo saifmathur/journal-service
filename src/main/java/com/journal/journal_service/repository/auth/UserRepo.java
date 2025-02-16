@@ -1,6 +1,7 @@
 package com.journal.journal_service.repository.auth;
 
 import com.journal.journal_service.models.auth.User;
+import com.journal.journal_service.models.auth.UserDetails;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,5 +20,9 @@ public interface UserRepo extends JpaRepository<User, Long> {
     Boolean isUserNameDuplicate(@Param("username") String username);
 
     Optional<User> findByUsernameAndIsActive(String username, boolean isActive);
+
+
+    @Query(value = "select * from users_details where email = :email",nativeQuery = true)
+    Optional<UserDetails> findByEmail(@Param("email") String email);
 }
 

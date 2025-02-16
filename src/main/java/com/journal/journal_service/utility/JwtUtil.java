@@ -1,10 +1,7 @@
 package com.journal.journal_service.utility;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.journal.journal_service.config.JwtConfig;
-import com.journal.journal_service.dto.CustomUserDetails;
 import com.journal.journal_service.models.auth.User;
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -26,6 +23,17 @@ public class JwtUtil {
     private static final Key SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     private static final long EXPIRATION_TIME = 3600000; // 1 hour
 
+
+    public static String generateTokenForGoogle(String email) {
+
+
+        return Jwts.builder()
+                .setSubject(email)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .signWith(JwtConfig.getSecretKey())
+                .compact();
+    }
 
     public static String generateToken(User user) {
 

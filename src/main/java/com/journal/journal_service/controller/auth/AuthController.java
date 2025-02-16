@@ -1,7 +1,9 @@
 package com.journal.journal_service.controller.auth;
 
+import com.journal.journal_service.dto.GoogleLoginRequestDto;
 import com.journal.journal_service.dto.RegisterDto;
 import com.journal.journal_service.services.auth.UserService;
+import com.journal.journal_service.utility.GoogleTokenService;
 import com.journal.journal_service.utility.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -9,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -18,7 +21,19 @@ public class AuthController {
     @Autowired
     UserService userService;
 
+    @Autowired
+    GoogleTokenService googleTokenService;
 
+
+
+    @PostMapping("/google-login")
+    public ResponseEntity<Map<String, String>> googleLogin(@RequestBody GoogleLoginRequestDto googleLoginRequest) {
+        try {
+            return ResponseEntity.ok(userService.googleLogin(googleLoginRequest));
+        } catch (Exception e) {
+            return ResponseEntity.ok((Map<String, String>) new HashMap<>().put("message","Google login failed"));
+        }
+    }
     @PostMapping("/register")
     public ResponseEntity<Map<String, String>> createUser(@ModelAttribute RegisterDto registerForm) throws Exception {
         return ResponseEntity.ok(userService.registerUser(registerForm));

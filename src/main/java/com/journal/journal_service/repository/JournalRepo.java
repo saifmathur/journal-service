@@ -5,6 +5,7 @@ import com.journal.journal_service.models.JournalEntry;
 import com.journal.journal_service.models.WorkType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -19,18 +20,17 @@ public interface JournalRepo extends JpaRepository<JournalEntry, Long> {
 
     List<JournalEntry> findByUserIdAndIsActiveOrderByLastModifiedDesc(Long userId, boolean b);
 
-    @Query(value = "SELECT \n" +
-            "    je.work_type_id as workTypeId, \n" +
-            "    wt.work_type AS workType, \n" +
-            "    COUNT(je.id) AS totalEntries\n" +
-            "FROM \n" +
-            "    journal_entry je\n" +
-            "JOIN \n" +
-            "    work_type wt \n" +
-            "ON \n" +
-            "    je.work_type_id = wt.id\n" +
-            "GROUP BY \n" +
-            "    je.work_type_id, wt.work_type;",nativeQuery = true)
-    List<Object[]> getStatsGroupedByWorkType();
+    @Query(value = "select\n" +
+            "  je.work_type_id as workTypeId,\n" +
+            "  wt.work_type as workType,\n" +
+            "  COUNT(je.id) as totalEntries\n" +
+            "from\n" +
+            "  journal_entry je\n" +
+            "  join work_type wt on je.work_type_id = wt.id\n" +
+            "where je.user_id = :userId\n" +
+            "group by\n" +
+            "  je.work_type_id,\n" +
+            "  wt.work_type;",nativeQuery = true)
+    List<Object[]> getStatsGroupedByWorkType(@Param("userId") Long userId);
 
 }
