@@ -138,6 +138,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 ud.setId(null);
                 user.setUsername(email);
                 user.setRoles("ROLE_USER");
+                ud.setEmail(email);
                 ud.setFirstName((String) payload.get("given_name"));
                 ud.setLastName((String) payload.get("family_name"));
                 user.setUserDetails(ud);
