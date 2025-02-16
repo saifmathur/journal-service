@@ -13,10 +13,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -39,6 +36,11 @@ public class ReminderScheduler {
             LocalDateTime now = LocalDateTime.now();
             for (Reminder reminder : toBeSet) {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+                log.info(String.valueOf(reminder.getReminderTime()));
+                if(reminder.getReminderTime().getSecond()!=0){
+                    LocalTime formatTime = reminder.getReminderTime().withNano(0).withSecond(0);
+                    reminder.setReminderTime(formatTime);
+                }
                 LocalDateTime dateTime = LocalDateTime.parse(reminder.getReminderDate() + "T" + reminder.getReminderTime(), formatter);
                 log.info("USER's selected time:" + String.valueOf(dateTime));
                 ZonedDateTime istTime = ZonedDateTime.now(ZoneId.of(reminder.getUserTimeZone()));
