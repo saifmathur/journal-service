@@ -130,7 +130,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             // Step 2: Extract user info from the payload
             String email = payload.getEmail();
             Boolean name = payload.getEmailVerified();
-            User user = userRepo.findByUsername(email).orElse(null);
+            User user = userRepo.findByUsernameAndIsActive(email, true).orElse(null);
             UserDetails ud = user == null ? new UserDetails() : user.getUserDetails();
             if (user == null) {
                 user = new User();
