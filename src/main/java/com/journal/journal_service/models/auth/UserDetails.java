@@ -24,6 +24,7 @@ public class UserDetails {
         return age;
     }
 
+
     private String email;
     private String DOB;
 

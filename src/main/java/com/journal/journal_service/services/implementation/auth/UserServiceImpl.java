@@ -1,11 +1,14 @@
 package com.journal.journal_service.services.implementation.auth;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.journal.journal_service.dto.CustomUserDetails;
+import com.journal.journal_service.dto.GoogleLoginRequestDto;
 import com.journal.journal_service.dto.RegisterDto;
 import com.journal.journal_service.models.auth.User;
 import com.journal.journal_service.models.auth.UserDetails;
 import com.journal.journal_service.repository.auth.UserRepo;
 import com.journal.journal_service.services.auth.UserService;
+import com.journal.journal_service.utility.GoogleTokenService;
 import com.journal.journal_service.utility.JwtUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +51,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Autowired
     private JwtUtil jwtUtil;
+
+    @Autowired
+    GoogleTokenService googleTokenService;
 
     @Override
     public Map<String, String> registerUser(RegisterDto registerForm) throws Exception {
@@ -93,8 +99,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                             registerForm.getPassword()
                     )
             );
-            User user = userRepo.findByUsernameAndIsActive(registerForm.getUsername(), true).orElseThrow(()->new UsernameNotFoundException("User not found"));
-            String fullName = user.getUserDetails().getFirstName()+" "+user.getUserDetails().getLastName().toString();
+            User user = userRepo.findByUsernameAndIsActive(registerForm.getUsername(), true).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+            String fullName = user.getUserDetails().getFirstName() + " " + user.getUserDetails().getLastName().toString();
 
             String jwtToken = JwtUtil.generateToken(user);
             Map<String, String> response = new HashMap<>();
@@ -117,8 +123,46 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    public Map<String, String> googleLogin(GoogleLoginRequestDto googleLoginRequestDto) throws Exception {
+        try {
+            GoogleIdToken.Payload payload = googleTokenService.verifyToken(googleLoginRequestDto.getIdToken());
+
+            // Step 2: Extract user info from the payload
+            String email = payload.getEmail();
+            Boolean name = payload.getEmailVerified();
+            User user = userRepo.findByUsername(email).orElse(null);
+            UserDetails ud = user == null ? new UserDetails() : user.getUserDetails();
+            if (user == null) {
+                user = new User();
+                user.setId(null);
+                ud.setId(null);
+                user.setUsername(email);
+                user.setRoles("ROLE_USER");
+                ud.setFirstName((String) payload.get("given_name"));
+                ud.setLastName((String) payload.get("family_name"));
+                user.setUserDetails(ud);
+                user = userRepo.saveAndFlush(user);
+            }
+            String fullName = user.getUserDetails().getFirstName() + " " + user.getUserDetails().getLastName();
+            String jwtToken = JwtUtil.generateToken(user);
+            Map<String, String> response = new HashMap<>();
+            response.put("token", jwtToken);
+            response.put("message", "Login successful");
+            response.put("fullName", fullName);
+            response.put("initials", getInitials(fullName));
+            response.put("username", user.getUsername());
+            response.put("email", email);
+            response.put("status", "200");
+            return response;
+            // Step 4: Return JWT token to the frontend
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
+    }
+
+    @Override
     public org.springframework.security.core.userdetails.UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepo.findByUsernameAndIsActive(username,true)
+        User user = userRepo.findByUsernameAndIsActive(username, true)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
 
         log.info("Attempting to load user with username: {}", username);
@@ -128,7 +172,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 .collect(Collectors.toList());
 
         log.info("USER LOADED: {} with roles: {} with ID: {}", user.getUsername(), user.getRoles(), user.getId());
-        CustomUserDetails cud = new CustomUserDetails(user.getId(),user.getUsername(), user.getPassword(), authorities);
+        CustomUserDetails cud = new CustomUserDetails(user.getId(), user.getUsername(), user.getPassword(), authorities);
         return cud;
     }
 
@@ -160,7 +204,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
     }
 
-    public String getInitials(String fullName){
+    public String getInitials(String fullName) {
         String[] parts = fullName.split(" ");
         StringBuilder initials = new StringBuilder();
         for (String part : parts) {

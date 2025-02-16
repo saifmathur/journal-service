@@ -1,10 +1,6 @@
 package com.journal.journal_service.services.implementation;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.journal.journal_service.dto.TaskFormDto;
-import com.journal.journal_service.dto.WorkTypeDto;
 import com.journal.journal_service.models.JournalEntry;
 import com.journal.journal_service.repository.JournalRepo;
 import com.journal.journal_service.services.JournalService;
@@ -15,7 +11,6 @@ import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -87,7 +82,7 @@ public class JournalServiceImpl implements JournalService {
         try {
             Long userId = jwtUtil.getUserId();
             int count = journalRepo.findByUserIdAndIsActive(userId, true).size();
-            List<Object[]> workTypeStats= journalRepo.getStatsGroupedByWorkType();
+            List<Object[]> workTypeStats= journalRepo.getStatsGroupedByWorkType(userId);
             workTypeStats.forEach(e->{
                 String[] s = Arrays.deepToString(e).split(",");
                 System.out.println(Arrays.deepToString(s).split(",")[2]);
