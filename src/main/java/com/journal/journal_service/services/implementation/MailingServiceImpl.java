@@ -4,8 +4,11 @@ import com.journal.journal_service.constants.AppConstants;
 import com.journal.journal_service.models.Reminder;
 import com.journal.journal_service.models.auth.User;
 import com.journal.journal_service.repository.auth.UserRepo;
+import com.journal.journal_service.scheduler.ReminderScheduler;
 import com.journal.journal_service.services.MailingService;
 import jakarta.mail.internet.MimeMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
@@ -23,6 +26,8 @@ import java.util.Optional;
 
 @Service
 public class MailingServiceImpl implements MailingService {
+
+    private static final Logger log = LoggerFactory.getLogger(MailingServiceImpl.class);
 
     private final JavaMailSender mailSender;
 
@@ -65,6 +70,7 @@ public class MailingServiceImpl implements MailingService {
             helper.setText(template, true);
             helper.setFrom(Objects.requireNonNull(environment.getProperty("GMAIL_APP_MAIL_ID")));
             mailSender.send(message);
+            log.info("mail sent to" + user.get().getUserDetails().getEmail());
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("Failed to send mail" + e.getMessage());

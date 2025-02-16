@@ -144,6 +144,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 user.setUserDetails(ud);
                 user = userRepo.saveAndFlush(user);
             }
+
             String fullName = user.getUserDetails().getFirstName() + " " + user.getUserDetails().getLastName();
             String jwtToken = JwtUtil.generateToken(user);
             Map<String, String> response = new HashMap<>();
