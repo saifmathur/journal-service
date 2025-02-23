@@ -5,7 +5,9 @@ import com.journal.journal_service.constants.AppConstants;
 import com.journal.journal_service.models.Reminder;
 import com.journal.journal_service.repository.ReminderRepo;
 import com.journal.journal_service.services.MailingService;
+import com.journal.journal_service.services.StorageService;
 import com.journal.journal_service.services.implementation.JournalServiceImpl;
+import com.journal.journal_service.services.implementation.OpenAIService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +30,15 @@ public class ReminderScheduler {
     @Autowired
     MailingService mailingService;
 
+    @Autowired
+    StorageService storageService;
+
+    @Autowired
+    OpenAIService openAIService;
+
     @Scheduled(fixedRate = 30000)
     public void setReminders() throws Exception {
+//        openAIService.getResumePointsBasedOnJobDescription(AppConstants.prompt);
         try {
             List<Reminder> toBeSet = reminderRepo.findByIsActiveTrueAndIsDeletedFalse();
             List<Reminder> toSave = new ArrayList<>();
