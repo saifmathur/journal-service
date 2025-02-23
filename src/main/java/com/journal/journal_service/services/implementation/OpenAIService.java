@@ -70,7 +70,8 @@ public class OpenAIService {
 
     public void getResumePointsBasedOnJobDescription(ReportAnalyzer report) throws Exception {
         try {
-            Map<String, Object> newPrompt = OpenAIService(report.getJobDescription() + AppConstants.OPEN_AI_PROMPT_FOR_JOB_DESCRIPTION);
+            String resume = storageService.extractTextFromS3PDF(report.getBucketFilePath());
+            Map<String, Object> newPrompt = OpenAIService("Resume Text: \n"+resume + "Job Description Text: \n" +report.getJobDescription() + AppConstants.OPEN_AI_PROMPT_FOR_JOB_DESCRIPTION_RESUME);
             String response = callOpenAI(environment.getProperty("OPEN_AI_TEXT_RESPONSE"), (HttpHeaders) newPrompt.get("headers"), (JSONObject) newPrompt.get("requestBody"));
             JSONObject responseObj = new JSONObject(response);
             log.info(responseObj.toString());

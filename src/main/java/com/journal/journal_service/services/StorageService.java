@@ -3,6 +3,8 @@ package com.journal.journal_service.services;
 
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -155,6 +157,23 @@ public class StorageService {
 
         } catch (Exception e) {
             throw new Exception(e);
+        }
+    }
+
+
+    public String extractTextFromS3PDF(String key) throws IOException {
+        try (ResponseInputStream<?> s3Object = s3Client.getObject(GetObjectRequest.builder()
+                .bucket(bucketName)
+                .key(key)
+                .build());
+             PDDocument document = PDDocument.load(s3Object)) {
+
+            PDFTextStripper stripper = new PDFTextStripper();
+            return stripper.getText(document);
+
+        } catch (S3Exception e) {
+            System.err.println("Error downloading file from S3: " + e);
+            throw e;
         }
     }
 
