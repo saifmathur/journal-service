@@ -62,7 +62,7 @@ public class ReportAnalyzerServiceImpl implements ReportAnalyzerService {
         reportAnalyzer.setStatus(AppConstants.QUEUED_REPORT);
         reportAnalyzerRepo.saveAndFlush(reportAnalyzer);
 
-        return reportAnalyzerRepo.findAll();
+        return reportAnalyzerRepo.findByUserIdAndIsDeletedFalse(jwtUtil.getUserId());
     }
 
     @Override
