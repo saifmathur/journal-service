@@ -79,11 +79,11 @@ public class SecurityConfig {
                 .cors().and()
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll() // Allow token generation endpoint
+                        .requestMatchers("/auth/**","/ws/**").permitAll() // Allow token generation endpoint
                         .anyRequest().authenticated() // Protect other endpoints
                 )
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/auth/**"))
+                        .ignoringRequestMatchers("/auth/**","/ws/**"))
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt()); // Enable JWT authentication
 
 

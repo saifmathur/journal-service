@@ -62,13 +62,13 @@ public class ReportAnalyzerServiceImpl implements ReportAnalyzerService {
         reportAnalyzer.setStatus(AppConstants.QUEUED_REPORT);
         reportAnalyzerRepo.saveAndFlush(reportAnalyzer);
 
-        return reportAnalyzerRepo.findByUserIdAndIsDeletedFalse(jwtUtil.getUserId());
+        return reportAnalyzerRepo.findByUserIdAndIsDeletedFalseOrderByCreatedDateDesc(jwtUtil.getUserId());
     }
 
     @Override
     public List<ReportAnalyzer> getAllReports() throws Exception {
         try {
-            return reportAnalyzerRepo.findByUserIdAndIsDeletedFalse(jwtUtil.getUserId());
+            return reportAnalyzerRepo.findByUserIdAndIsDeletedFalseOrderByCreatedDateDesc(jwtUtil.getUserId());
         } catch (Exception e) {
             throw new Exception(e);
         }
