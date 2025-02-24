@@ -3,6 +3,7 @@ package com.journal.journal_service.services.implementation;
 
 
 import com.journal.journal_service.constants.AppConstants;
+import com.journal.journal_service.dto.ReportStatusUpdate;
 import com.journal.journal_service.models.ReportAnalyzer;
 import com.journal.journal_service.repository.ReportAnalyzerRepo;
 import com.journal.journal_service.services.StorageService;
@@ -14,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -41,7 +43,13 @@ public class OpenAIService {
     @Autowired
     ReportAnalyzerRepo reportAnalyzerRepo;
 
-    public Map<String, Object> OpenAIService(String prompt) throws JSONException {
+    private final SimpMessagingTemplate messagingTemplate;
+
+    public OpenAIService(SimpMessagingTemplate messagingTemplate) {
+        this.messagingTemplate = messagingTemplate;
+    }
+
+    public Map<String, Object> OpenAIServiceInit(String prompt) throws JSONException {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + environment.getProperty("OPEN_AI_KEY"));
         JSONObject requestBody = new JSONObject();
@@ -71,7 +79,7 @@ public class OpenAIService {
     public void getResumePointsBasedOnJobDescription(ReportAnalyzer report) throws Exception {
         try {
             String resume = storageService.extractTextFromS3PDF(report.getBucketFilePath());
-            Map<String, Object> newPrompt = OpenAIService("Resume Text: \n"+resume + "Job Description Text: \n" +report.getJobDescription() + AppConstants.OPEN_AI_PROMPT_FOR_JOB_DESCRIPTION_RESUME);
+            Map<String, Object> newPrompt = OpenAIServiceInit("Resume Text: \n"+resume + "Job Description Text: \n" +report.getJobDescription() + AppConstants.OPEN_AI_PROMPT_FOR_JOB_DESCRIPTION_RESUME);
             String response = callOpenAI(environment.getProperty("OPEN_AI_TEXT_RESPONSE"), (HttpHeaders) newPrompt.get("headers"), (JSONObject) newPrompt.get("requestBody"));
             JSONObject responseObj = new JSONObject(response);
             log.info(responseObj.toString());
@@ -80,16 +88,17 @@ public class OpenAIService {
                     .getJSONObject("message")
                     .get("content"));
             content = content.replace("\"", "");
-            String s3FilePath = AppConstants.FOLDER_PREFIX_PATH + "user_" + report.getUserId().toString() + "/"+ AppConstants.FOLDER_PREFIX_PATH_GENERATED + report.getReportName();
+            String s3FilePath = AppConstants.FOLDER_PREFIX_PATH + "user_" + report.getUserId().toString() + "/"+ AppConstants.FOLDER_PREFIX_PATH_GENERATED + (report.getReportName().contains(".pdf")?report.getReportName():report.getReportName().concat(".pdf"));
             storageService.generateAndUploadPdf(content, s3FilePath);
 
             report.setGeneratedFilePath(s3FilePath);
             reportAnalyzerRepo.saveAndFlush(report);
-
             report.setStatus(AppConstants.GENERATED_REPORT);
+            messagingTemplate.convertAndSend("/topic/status", new ReportStatusUpdate(report.getId(), report.getStatus(), report.getGeneratedFilePath()));
             reportAnalyzerRepo.saveAndFlush(report);
         } catch (Exception e) {
             report.setStatus(AppConstants.FAILED_REPORT);
+            messagingTemplate.convertAndSend("/topic/status", new ReportStatusUpdate(report.getId(), report.getStatus(), report.getGeneratedFilePath()));
             reportAnalyzerRepo.saveAndFlush(report);
             throw new Exception(e);
         }

@@ -15,4 +15,7 @@ public interface ReportAnalyzerRepo extends JpaRepository<ReportAnalyzer, Long> 
     List<ReportAnalyzer> findByUserIdAndIsDeletedFalse(Long userId);
 
     List<ReportAnalyzer> findByIsDeletedFalseAndStatusLike(String queuedReport);
+
+
+    List<ReportAnalyzer> findByUserIdAndIsDeletedFalseOrderByCreatedDateDesc(Long userId);
 }
