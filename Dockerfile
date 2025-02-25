@@ -25,21 +25,13 @@ WORKDIR /build
 COPY ./src src/
 COPY pom.xml pom.xml
 
-# Build the application and rename the JAR using a shell form to avoid parsing issues.
-# Added detailed debugging steps to confirm JAR creation.
-RUN /bin/sh -c "./mvnw package -DskipTests && echo 'Listing target directory:' && ls -la target/ && if [ -f target/*.jar ]; then mv target/*.jar target/app.jar; else echo 'JAR not found in target/'; exit 1; fi"
+# Build the application and rename the JAR using the exact filename.
+RUN ./mvnw package -DskipTests && \
+    echo 'Listing target directory:' && ls -la target/ && \
+    mv target/journal-service-0.0.1-SNAPSHOT.jar target/app.jar
 
 ################################################################################
-# Create a stage for extracting the application into separate layers.
-FROM package as extract
-
-WORKDIR /build
-
-# Debugging step to confirm app.jar existence before extraction
-RUN ls -la target/ && java -Djarmode=layertools -jar target/app.jar extract --destination target/extracted
-
-################################################################################
-# Create a new stage for running the application.
+# Create a stage for running the application.
 FROM eclipse-temurin:17-jre-jammy AS final
 
 # Create user using a more compatible approach for Railway
@@ -48,13 +40,8 @@ USER appuser
 
 WORKDIR /app
 
-# Debugging step to confirm extracted files are copied correctly
-RUN ls -la /app
-
-COPY --from=extract /build/target/extracted/dependencies/ ./
-COPY --from=extract /build/target/extracted/spring-boot-loader/ ./
-COPY --from=extract /build/target/extracted/snapshot-dependencies/ ./
-COPY --from=extract /build/target/extracted/application/ ./
+# Copy the built JAR directly without extraction for simplicity.
+COPY --from=package /build/target/app.jar ./
 
 # Final check for app.jar existence
 RUN ls -la /app
