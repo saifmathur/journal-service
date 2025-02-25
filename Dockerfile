@@ -10,11 +10,8 @@ WORKDIR /build
 COPY --chmod=0755 mvnw mvnw
 COPY .mvn/ .mvn/
 
-# Download dependencies as a separate step to take advantage of Docker's caching.
-# Updated cache mount IDs with proper cache key prefix "cache-" as required.
-RUN --mount=type=cache,id=cache-maven-deps,target=/root/.m2 \\
-    --mount=type=bind,source=pom.xml,target=pom.xml \\
-    ./mvnw dependency:go-offline -DskipTests
+# Download dependencies without cache mounts for Railway compatibility.
+RUN ./mvnw dependency:go-offline -DskipTests
 
 ################################################################################
 # Create a stage for building the application based on the stage with downloaded dependencies.
@@ -23,9 +20,7 @@ FROM deps as package
 WORKDIR /build
 
 COPY ./src src/
-RUN --mount=type=cache,id=cache-maven-package,target=/root/.m2 \\
-    --mount=type=bind,source=pom.xml,target=pom.xml \\
-    ./mvnw package -DskipTests && \\
+RUN ./mvnw package -DskipTests && \\
     mv target/$(./mvnw help:evaluate -Dexpression=project.artifactId -q -DforceStdout)-$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout).jar target/app.jar
 
 ################################################################################
@@ -58,6 +53,8 @@ COPY --from=extract /build/target/extracted/spring-boot-loader/ ./
 COPY --from=extract /build/target/extracted/snapshot-dependencies/ ./
 COPY --from=extract /build/target/extracted/application/ ./
 
-EXPOSE 8080
+# Expose dynamic port for Railway compatibility
+EXPOSE ${PORT}
 
-ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher"]
+# Adjust ENTRYPOINT for Railway compatibility
+ENTRYPOINT ["java", "-Dserver.port=${PORT}", "-jar", "app.jar"]
