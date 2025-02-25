@@ -22,9 +22,8 @@ WORKDIR /build
 COPY ./src src/
 COPY pom.xml pom.xml
 
-# Build the application and rename the JAR without using shell expressions that may cause parsing errors.
-RUN ./mvnw package -DskipTests && \\
-    cp target/*.jar target/app.jar
+# Build the application and rename the JAR using a shell form to avoid parsing issues.
+RUN /bin/sh -c "./mvnw package -DskipTests && mv target/*.jar target/app.jar"
 
 ################################################################################
 # Create a stage for extracting the application into separate layers.
