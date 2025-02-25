@@ -6,6 +6,9 @@ FROM eclipse-temurin:17-jdk-jammy as deps
 
 WORKDIR /build
 
+# Copy pom.xml before downloading dependencies to avoid missing POM errors.
+COPY pom.xml pom.xml
+
 # Copy the mvnw wrapper with executable permissions.
 COPY --chmod=0755 mvnw mvnw
 COPY .mvn/ .mvn/
@@ -20,7 +23,6 @@ FROM deps as package
 WORKDIR /build
 
 COPY ./src src/
-COPY pom.xml pom.xml
 
 # Build the application and rename the JAR using a shell form to avoid parsing issues.
 RUN /bin/sh -c "./mvnw package -DskipTests && mv target/*.jar target/app.jar"
