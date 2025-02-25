@@ -23,10 +23,11 @@ FROM deps as package
 WORKDIR /build
 
 COPY ./src src/
+COPY pom.xml pom.xml
 
 # Build the application and rename the JAR using a shell form to avoid parsing issues.
-# Added debugging step to check if the JAR file exists after the build.
-RUN /bin/sh -c "./mvnw package -DskipTests && ls -la target/ && mv target/*.jar target/app.jar"
+# Added detailed debugging steps to confirm JAR creation.
+RUN /bin/sh -c "./mvnw package -DskipTests && echo 'Listing target directory:' && ls -la target/ && if [ -f target/*.jar ]; then mv target/*.jar target/app.jar; else echo 'JAR not found in target/'; exit 1; fi"
 
 ################################################################################
 # Create a stage for extracting the application into separate layers.
@@ -34,7 +35,8 @@ FROM package as extract
 
 WORKDIR /build
 
-RUN java -Djarmode=layertools -jar target/app.jar extract --destination target/extracted
+# Debugging step to confirm app.jar existence before extraction
+RUN ls -la target/ && java -Djarmode=layertools -jar target/app.jar extract --destination target/extracted
 
 ################################################################################
 # Create a new stage for running the application.
@@ -46,10 +48,16 @@ USER appuser
 
 WORKDIR /app
 
+# Debugging step to confirm extracted files are copied correctly
+RUN ls -la /app
+
 COPY --from=extract /build/target/extracted/dependencies/ ./
 COPY --from=extract /build/target/extracted/spring-boot-loader/ ./
 COPY --from=extract /build/target/extracted/snapshot-dependencies/ ./
 COPY --from=extract /build/target/extracted/application/ ./
+
+# Final check for app.jar existence
+RUN ls -la /app
 
 # Expose dynamic port for Railway compatibility
 EXPOSE ${PORT}
