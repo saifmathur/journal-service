@@ -37,15 +37,8 @@ RUN java -Djarmode=layertools -jar target/app.jar extract --destination target/e
 # Create a new stage for running the application.
 FROM eclipse-temurin:17-jre-jammy AS final
 
-ARG UID=10001
-RUN adduser \\
-    --disabled-password \\
-    --gecos "" \\
-    --home "/nonexistent" \\
-    --shell "/sbin/nologin" \\
-    --no-create-home \\
-    --uid "${UID}" \\
-    appuser
+# Create user using a more compatible approach for Railway
+RUN useradd -m -u 10001 appuser
 USER appuser
 
 WORKDIR /app
