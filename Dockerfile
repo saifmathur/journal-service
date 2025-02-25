@@ -12,9 +12,9 @@ COPY .mvn/ .mvn/
 
 # Download dependencies as a separate step to take advantage of Docker's caching.
 # Leverage a cache mount to /root/.m2 so that subsequent builds don't have to
-# re-download packages.
-RUN --mount=type=cache,id=maven-cache-{{ .BuildID }},target=/root/.m2 \
-    --mount=type=bind,source=pom.xml,target=pom.xml \
+# re-download packages. The cache ID is now correctly prefixed with "cache-".
+RUN --mount=type=cache,id=cache-maven-cache,target=/root/.m2 \\
+    --mount=type=bind,source=pom.xml,target=pom.xml \\
     ./mvnw dependency:go-offline -DskipTests
 
 ################################################################################
@@ -24,9 +24,9 @@ FROM deps as package
 WORKDIR /build
 
 COPY ./src src/
-RUN --mount=type=cache,id=maven-cache-{{ .BuildID }},target=/root/.m2 \
-    --mount=type=bind,source=pom.xml,target=pom.xml \
-    ./mvnw package -DskipTests && \
+RUN --mount=type=cache,id=cache-maven-cache,target=/root/.m2 \\
+    --mount=type=bind,source=pom.xml,target=pom.xml \\
+    ./mvnw package -DskipTests && \\
     mv target/$(./mvnw help:evaluate -Dexpression=project.artifactId -q -DforceStdout)-$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout).jar target/app.jar
 
 ################################################################################
@@ -42,13 +42,13 @@ RUN java -Djarmode=layertools -jar target/app.jar extract --destination target/e
 FROM eclipse-temurin:17-jre-jammy AS final
 
 ARG UID=10001
-RUN adduser \
-    --disabled-password \
-    --gecos "" \
-    --home "/nonexistent" \
-    --shell "/sbin/nologin" \
-    --no-create-home \
-    --uid "${UID}" \
+RUN adduser \\
+    --disabled-password \\
+    --gecos "" \\
+    --home "/nonexistent" \\
+    --shell "/sbin/nologin" \\
+    --no-create-home \\
+    --uid "${UID}" \\
     appuser
 USER appuser
 
