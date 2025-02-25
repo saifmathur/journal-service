@@ -11,8 +11,8 @@ COPY --chmod=0755 mvnw mvnw
 COPY .mvn/ .mvn/
 
 # Download dependencies as a separate step to take advantage of Docker's caching.
-# Updated cache mount IDs to be prefixed with "maven" as per required format.
-RUN --mount=type=cache,id=maven-cache-deps,target=/root/.m2 \\
+# Updated cache mount IDs with proper cache key prefix "cache-" as required.
+RUN --mount=type=cache,id=cache-maven-deps,target=/root/.m2 \\
     --mount=type=bind,source=pom.xml,target=pom.xml \\
     ./mvnw dependency:go-offline -DskipTests
 
@@ -23,7 +23,7 @@ FROM deps as package
 WORKDIR /build
 
 COPY ./src src/
-RUN --mount=type=cache,id=maven-cache-package,target=/root/.m2 \\
+RUN --mount=type=cache,id=cache-maven-package,target=/root/.m2 \\
     --mount=type=bind,source=pom.xml,target=pom.xml \\
     ./mvnw package -DskipTests && \\
     mv target/$(./mvnw help:evaluate -Dexpression=project.artifactId -q -DforceStdout)-$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout).jar target/app.jar
