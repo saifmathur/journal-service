@@ -20,8 +20,11 @@ FROM deps as package
 WORKDIR /build
 
 COPY ./src src/
+COPY pom.xml pom.xml
+
+# Build the application and rename the JAR without using shell expressions that may cause parsing errors.
 RUN ./mvnw package -DskipTests && \\
-    mv target/$(./mvnw help:evaluate -Dexpression=project.artifactId -q -DforceStdout)-$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout).jar target/app.jar
+    cp target/*.jar target/app.jar
 
 ################################################################################
 # Create a stage for extracting the application into separate layers.
