@@ -48,8 +48,8 @@ public class UserDetails {
     private LocalDateTime eventTime;
 
 
-    @OneToOne(mappedBy = "userDetails")
-    private User user;
+//    @OneToOne(mappedBy = "userDetails")
+//    private User user;
 
 //    @OneToOne(mappedBy = "user_id")
 //    private User user;
@@ -85,9 +85,9 @@ public class UserDetails {
         this.eventTime = eventTime;
     }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
+//    public void setUser(User user) {
+//        this.user = user;
+//    }
 
     public void setFirstName(String firstName) {
         this.firstName = firstName;
@@ -135,7 +135,7 @@ public class UserDetails {
         return eventTime;
     }
 
-    public User getUser() {
-        return user;
-    }
+//    public User getUser() {
+//        return user;
+//    }
 }
