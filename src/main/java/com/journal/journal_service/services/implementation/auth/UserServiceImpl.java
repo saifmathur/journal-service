@@ -1,6 +1,7 @@
 package com.journal.journal_service.services.implementation.auth;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.journal.journal_service.constants.AppConstants;
 import com.journal.journal_service.dto.CustomUserDetails;
 import com.journal.journal_service.dto.GoogleLoginRequestDto;
 import com.journal.journal_service.dto.RegisterDto;
@@ -10,6 +11,7 @@ import com.journal.journal_service.repository.auth.UserRepo;
 import com.journal.journal_service.services.auth.UserService;
 import com.journal.journal_service.utility.GoogleTokenService;
 import com.journal.journal_service.utility.JwtUtil;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,7 +77,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             userDetails.setAddressLine2(registerForm.getAddressLine2());
             userDetails.setEmail(registerForm.getEmail());
             user.setUserDetails(userDetails);
-            user.setRoles("ROLE_USER");
+            user.setRoles(AppConstants.ROLE_USER);
             userRepo.save(user);
             Map<String, String> resMap = new HashMap<>();
             resMap.put("message", "Registered user: " + user.getUsername());
@@ -137,7 +139,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 user.setId(null);
                 ud.setId(null);
                 user.setUsername(email);
-                user.setRoles("ROLE_USER");
+                user.setRoles(AppConstants.ROLE_GOOGLE_USER);
                 ud.setEmail(email);
                 ud.setFirstName((String) payload.get("given_name"));
                 ud.setLastName((String) payload.get("family_name"));
@@ -160,6 +162,49 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         } catch (Exception e) {
             throw new Exception(e);
         }
+    }
+
+    @Override
+    public Map<String, Object> getUserDetails() throws Exception {
+        Map<String, Object> res =new HashMap<>();
+        try{
+            Long userId = jwtUtil.getUserId();
+            User user = userRepo.findByIdAndIsActiveTrue(userId);
+            res.put("userName", user.getUsername());
+            res.put("roles", user.getRoles());
+            res.put("userDetails", user.getUserDetails());
+        } catch (Exception e) {
+            res.put("status", "500");
+            res.put("message", "Failed to get user details");
+        }
+        return res;
+    }
+
+    @Override
+    public Map<String, String> updateUser(RegisterDto registerForm) throws Exception {
+        Map<String, String> res = new HashMap<>();
+        try {
+            Long userId = jwtUtil.getUserId();
+            User user = userRepo.findByIdAndIsActiveTrue(userId);
+            UserDetails userDetails = user.getUserDetails();
+            userDetails.setEmail(registerForm.getEmail() != null ? registerForm.getEmail() : userDetails.getEmail());
+            userDetails.setFirstName(registerForm.getFirstName() != null ? registerForm.getFirstName() : userDetails.getFirstName());
+            userDetails.setLastName(registerForm.getLastName() != null ? registerForm.getLastName() : userDetails.getLastName());
+            userDetails.setAddressLine1(registerForm.getAddressLine1() != null ? registerForm.getAddressLine1() : userDetails.getAddressLine1());
+            userDetails.setAddressLine2(registerForm.getAddressLine2() != null ? registerForm.getAddressLine2() : userDetails.getAddressLine2());
+            userDetails.setDOB(registerForm.getDOB() != null ? registerForm.getDOB() : userDetails.getDOB());
+
+            user.setUserDetails(userDetails);
+            userRepo.saveAndFlush(user);
+
+            res.put("status", "200");
+            res.put("message", "User updated with user id: " + userId);
+
+        } catch (Exception e) {
+            res.put("status", "500");
+            res.put("message", "Failed to update user");
+        }
+        return res;
     }
 
     @Override

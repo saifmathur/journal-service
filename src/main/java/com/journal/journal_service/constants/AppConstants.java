@@ -21,6 +21,10 @@ public class AppConstants {
     public static final String OPEN_AI_PROMPT_FOR_JOB_DESCRIPTION_RESUME = "\n\n Based on the above resume and job description analyze how well the following resume matches this job description, give me a full in depth analysis what i can do to improve the resume and make it more impactful, send your response only so that this response can be structured into a pdf file, dont send anything else";
 
 
+    public static final String ROLE_USER = "ROLE_USER";
+    public static final String ROLE_GOOGLE_USER = "ROLE_GOOGLE_USER";
+
+
 
     public static final String FOLDER_PREFIX_PATH = "resumes/";
     public static final String FOLDER_PREFIX_PATH_GENERATED = "generated/";
