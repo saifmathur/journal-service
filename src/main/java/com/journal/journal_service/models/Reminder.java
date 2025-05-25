@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.springframework.data.annotation.LastModifiedDate;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -16,7 +17,7 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class Reminder {
+public class Reminder  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -63,10 +64,6 @@ public class Reminder {
         return isDeleted;
     }
 
-    public LocalDateTime getLastModified() {
-        return lastModified;
-    }
-
     public void setTitle(String title) {
         this.title = title;
     }
@@ -104,53 +101,8 @@ public class Reminder {
     }
 
 
-
-    public Long getId() {
-        return id;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
     public void setUserTimeZone(String userTimeZone) {
         this.userTimeZone = userTimeZone;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public boolean isDeleted() {
-        return isDeleted;
-    }
-
-    public String getUserTimeZone() {
-        return userTimeZone;
-    }
-
-    public String getNotes() {
-        return notes;
-    }
-
-    public LocalDate getReminderDate() {
-        return reminderDate;
-    }
-
-    public LocalTime getReminderTime() {
-        return reminderTime;
-    }
-
-    public boolean isActive() {
-        return isActive;
-    }
-
-    public String getPriority() {
-        return priority;
-    }
-
-    public String getFrequency() {
-        return frequency;
     }
 
 

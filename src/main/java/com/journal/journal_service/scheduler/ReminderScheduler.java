@@ -2,6 +2,8 @@ package com.journal.journal_service.scheduler;
 
 
 import com.journal.journal_service.constants.AppConstants;
+import com.journal.journal_service.kafka.ConsumerService;
+import com.journal.journal_service.kafka.ProducerService;
 import com.journal.journal_service.models.Reminder;
 import com.journal.journal_service.repository.ReminderRepo;
 import com.journal.journal_service.services.MailingService;
@@ -36,9 +38,14 @@ public class ReminderScheduler {
     @Autowired
     OpenAIService openAIService;
 
+    @Autowired
+    ConsumerService kafkaConsumerService;
+
+    @Autowired
+    ProducerService kafkaProducerService;
+
     @Scheduled(fixedRate = 30000)
     public void setReminders() throws Exception {
-//        openAIService.getResumePointsBasedOnJobDescription(AppConstants.prompt);
         try {
             List<Reminder> toBeSet = reminderRepo.findByIsActiveTrueAndIsDeletedFalse();
             List<Reminder> toSave = new ArrayList<>();
@@ -46,7 +53,7 @@ public class ReminderScheduler {
             for (Reminder reminder : toBeSet) {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
                 log.info(String.valueOf(reminder.getReminderTime()));
-                if(reminder.getReminderTime().getSecond()!=0){
+                if (reminder.getReminderTime().getSecond() != 0) {
                     LocalTime formatTime = reminder.getReminderTime().withNano(0).withSecond(0);
                     reminder.setReminderTime(formatTime);
                 }
@@ -58,7 +65,14 @@ public class ReminderScheduler {
                 log.info("NOW " + localISTTime);
                 if (dateTime.isEqual(localISTTime) || dateTime.isBefore(localISTTime)) {
                     //call mailing service here
-                    mailingService.sendEmail(reminder);
+                    try {
+                        kafkaProducerService.sendReminder("reminder-topic", String.valueOf(reminder.getId()));
+
+                    } catch (Exception e) {
+                        log.info("Error sending reminder to Kafka topic: {}", e.getMessage());
+                        continue;
+                    }
+                    //mailingService.sendEmail(reminder);
                     if (reminder.getFrequency() == null) {
                         reminder.setActive(false);
                         reminder.setDeleted(true);
